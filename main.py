@@ -784,7 +784,7 @@ class ImageEditor(QMainWindow):
         self.angle = self.angle_slider.value()
         self.angle_label.setText(f"Rotation Angle: {self.angle}°")
         if self.angle != 0:
-            self.rotate_yolo_boxes(self.angle);
+            self.rotate_yolo_boxes(self.angle)
             height, width = image.shape[:2]
             center = (width / 2, height / 2)
             matrix = cv2.getRotationMatrix2D(center, -self.angle, 1.0)
@@ -804,6 +804,7 @@ class ImageEditor(QMainWindow):
         self.image_item = QGraphicsPixmapItem(QPixmap.fromImage(qimage))
         self.scene.addItem(self.image_item)
         if(self.scale == 1.0):
+            self.scene.setSceneRect(self.image_item.boundingRect())
             self.view.fitInView(self.image_item, Qt.KeepAspectRatio)
             self.view.centerOn(self.image_item)
 
@@ -818,7 +819,7 @@ class ImageEditor(QMainWindow):
 
     def flip_image(self):
         self.original_image = cv2.flip(self.original_image, 1)
-        self.update_image();
+        self.update_image()
 
     def bgr_to_hsv(self):
         hsv = cv2.cvtColor(self.original_image, cv2.COLOR_BGR2HSV).astype(np.float32)
