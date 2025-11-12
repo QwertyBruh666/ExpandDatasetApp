@@ -369,6 +369,7 @@ class ImageEditor(QMainWindow):
         self.images = []
         self.image_paths = []
         self.current_image_index = -1
+        self.zoom = 0
         self.image = None
         self.original_image = None
         self.selected_color = QColor("#ff0000")
@@ -999,6 +1000,26 @@ class ImageEditor(QMainWindow):
             self.load_current_image()
         self.yolo_labels = []
         self.current_class = 0
+
+    def wheelEvent(self, event):
+        zoom_in_factor = 1.10
+        zoom_out_factor = 0.9
+
+        if event.angleDelta().y() > 0:
+            zoom_factor = zoom_in_factor
+            self.zoom += 1
+            if self.zoom >= 30:
+                self.zoom = 30
+                return
+        else:
+            zoom_factor = zoom_out_factor
+            self.zoom -= 1
+            if self.zoom <= -30:
+                self.zoom = -30
+                return
+        print(self.zoom)
+
+        self.view.scale(zoom_factor, zoom_factor)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
