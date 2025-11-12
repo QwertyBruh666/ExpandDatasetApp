@@ -614,7 +614,7 @@ class ImageEditor(QMainWindow):
         viewer.exec()
 
     def show_with_mark(self):
-        if(os.path.exists("dataset") == False):
+        if(os.path.exists("handmade") == False):
             QMessageBox.information(None, "Warning", "Handmade dataset is empty you should create it")
             return
 
