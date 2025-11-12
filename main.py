@@ -1,6 +1,7 @@
 import sys
 import cv2
 import time
+from pathlib import Path
 import numpy as np
 import zipfile
 import tempfile
@@ -127,11 +128,6 @@ class SegmentedViewerDialog(QDialog):
 #окошко для показа фоток ручной разметки
 class ResultViewerDialog(QDialog):
     def __init__(self, image_paths, label_paths, class_names=None, parent=None):
-        """
-        :param image_paths: список путей к изображениям
-        :param label_paths: список путей к YOLO-текстовикам
-        :param class_names: dict {cls_id: "name"} для подписей
-        """
         super().__init__(parent)
         self.setWindowTitle("Результаты (изображения + разметка)")
         self.setFixedSize(800, 600)
@@ -141,7 +137,6 @@ class ResultViewerDialog(QDialog):
         self.current_index = 0
         self.class_names = class_names or {}
 
-        # палитра (20 цветов)
         self.palette = [
             (220, 20, 60), (0, 128, 0), (30, 144, 255), (255, 165, 0),
             (138, 43, 226), (0, 206, 209), (255, 20, 147), (139, 69, 19),
@@ -189,13 +184,11 @@ class ResultViewerDialog(QDialog):
         return img
 
     def load_image(self):
-        """Загружает текущее изображение с разметкой"""
         if not self.image_paths:
             return
 
         img_path = self.image_paths[self.current_index]
 
-        # ищем .txt с тем же именем
         base = os.path.splitext(os.path.basename(img_path))[0]
         label_file = None
         for lf in self.label_paths:
@@ -591,7 +584,7 @@ class ImageEditor(QMainWindow):
 
     def auto_augmentate(self):
         if os.path.exists("handmade"):
-            augmentate_it("handmade/images", "handmade/labels")
+            augmentate_it(Path("handmade")/Path("images"), Path("handmade")/Path("labels"))
         augmentate_it("photos")
 
     def choose_color(self):
@@ -605,14 +598,14 @@ class ImageEditor(QMainWindow):
             QMessageBox.information(None, "Warning", "AutoDataset is empty you should create it")
             return
         images = sorted([
-            os.path.join("dataset/train/images", f)
-            for f in os.listdir("dataset/train/images")
+            os.path.join(Path("dataset")/"train"/"images", f)
+            for f in os.listdir(Path("dataset")/"train"/"images")
             if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.HEIC'))
         ])
 
         classes = sorted([
-            os.path.join("dataset/train/labels", f)
-            for f in os.listdir("dataset/train/labels")
+            os.path.join(Path("dataset")/"train"/"labels", f)
+            for f in os.listdir(Path("dataset")/"train"/"labels")
             if f.lower().endswith(('.txt'))
         ])
 
@@ -625,14 +618,14 @@ class ImageEditor(QMainWindow):
             return
 
         images = [
-            os.path.join("handmade/images", f)
-            for f in os.listdir("handmade/images")
+            os.path.join(Path("handmade")/"images", f)
+            for f in os.listdir(Path("handmade")/"images")
             if f.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.HEIC'))
         ]
 
         classes = [
-            os.path.join("handmade/labels", f)
-            for f in os.listdir("handmade/labels")
+            os.path.join(Path("handmade")/"labels", f)
+            for f in os.listdir(Path("handmade")/"labels")
             if f.lower().endswith(('.txt'))
         ]
 
@@ -978,17 +971,17 @@ class ImageEditor(QMainWindow):
             return
 
         result_folder = "handmade"
-        res_img_folder = "handmade/images"
-        res_labels_folder = "handmade/labels"
+        res_img_folder = Path("handmade")/"images"
+        res_labels_folder = Path("handmade")/"labels"
 
         os.makedirs(result_folder, exist_ok = True)
         os.makedirs(res_img_folder, exist_ok = True)
         os.makedirs(res_labels_folder, exist_ok = True)
 
         file_name = f"image_{int(time.time())}"
-        cv2.imwrite("handmade/images/" + file_name + ".jpg", self.image)
+        cv2.imwrite(Path("handmade")/"images"/f"{file_name}.jpg", self.image)
 
-        with open("handmade/labels/" + file_name + ".txt", "w") as f:
+        with open(Path("handmade")/"labels"/f"{file_name}.txt", "w") as f:
             for txt in self.yolo_labels:
                 f.write(txt + "\n")
 

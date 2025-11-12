@@ -1,5 +1,5 @@
 import time
-
+from pathlib import Path
 import numpy as np
 import torch
 import cv2
@@ -160,9 +160,8 @@ def create_segmentated_annotated_images(image_dir, text_dir, output_dir):
             cv2.putText(image, label, (points[0][0], points[0][1] - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.4, color, 2)
 
-        new_image_name = f'{output_dir}/{image_path.split('/')[-1]}'
-        print('lol', new_image_name)
-        cv2.imwrite(new_image_name, image)
+        new_image_name = Path(output_dir)/Path(image_path).name
+        cv2.imwrite(str(new_image_name), image)
 
 
 def zero_shot_folder_detection(image_dir: str, classes: list[str], output_dir=None, min_confidence: float = 0.03,
@@ -174,7 +173,7 @@ def zero_shot_folder_detection(image_dir: str, classes: list[str], output_dir=No
     model.set_classes(classes)
 
     # Список расширений изображений
-    image_extensions = ('.jpg', '.jpeg', '.png', '.HEIC')
+    image_extensions = ('.jpg', '.jpeg', '.png', '.heic')
 
     for filename in os.listdir(image_dir):
         if filename.lower().endswith(image_extensions):
@@ -202,7 +201,7 @@ def zero_shot_image_detection(image_path: str, model, output_dir, min_confidence
     image_path = image_path.split('/')[-1]
     print(image_path)
     # text_filename = f"{output_dir}/{image_path.replace(os.path.splitext(image_path)[1], ".txt")}"
-    text_filename = f"{output_dir}/{image_path.split('.')[-2]}.txt"
+    text_filename = Path(output_dir)/f"{image_path.split('.')[-2]}.txt"
 
     with open(text_filename, 'w') as f:
         f.writelines(info)
@@ -233,7 +232,7 @@ def sam_image_segmentation(predictor, image_path: str, texts_dir: str):
     image_base_path = image_path.split('.')
     image_base_path[-1] = 'txt'
     image_base_path = ('.'.join(image_base_path)).split('/')[-1]
-    text_filename = fr"{texts_dir}/{image_base_path}"
+    text_filename = Path(texts_dir)/image_base_path
 
     # text_filename = f"{texts_dir}/{image_path.replace(os.path.splitext(image_path)[1], ".txt")}"
 

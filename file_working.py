@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 from PIL import Image
 from coco_dataset_working import classes_indexes_to_names
 
@@ -42,10 +43,10 @@ def fill_the_dataset(dataset_name, dir_name_images, dir_name_textes, dataset_tra
     # Распределение файлов в train и valid  составляющую датасета
     # train - 80% ; valid - 20%
 
-    train_path_images = f'{dataset_name}/train/images/'
-    train_path_labels = f'{dataset_name}/train/labels/'
-    valid_path_images = f'{dataset_name}/valid/images/'
-    valid_path_labels = f'{dataset_name}/valid/labels/'
+    train_path_images = Path(dataset_name)/"train"/"images"
+    train_path_labels = Path(dataset_name)/"train"/"labels"
+    valid_path_images = Path(dataset_name)/"valid"/"images"
+    valid_path_labels = Path(dataset_name)/"valid"/"labels"
 
     image_extensions = ('.jpg', '.jpeg', '.png')
     all_imag = [i for i in os.listdir(dir_name_images) if i.lower().endswith(image_extensions)]
@@ -55,8 +56,8 @@ def fill_the_dataset(dataset_name, dir_name_images, dir_name_textes, dataset_tra
     for cur_image_raw in all_imag[:int(count_of_files *dataset_train_percent)]:
         cur_text = cut_the_extension(cur_image_raw) + '.txt'
 
-        cur_image = f'{dir_name_images}/{cur_image_raw}'
-        cur_text = f'{dir_name_textes}/{cur_text}'
+        cur_image = Path(dir_name_images)/cur_image_raw
+        cur_text = Path(dir_name_textes)/cur_text
 
         shutil.move(cur_image, train_path_images)
         shutil.move(cur_text, train_path_labels)
@@ -64,8 +65,8 @@ def fill_the_dataset(dataset_name, dir_name_images, dir_name_textes, dataset_tra
     for cur_image_raw in all_imag[int(count_of_files * dataset_train_percent):]:
         cur_text = cut_the_extension(cur_image_raw) + '.txt'
 
-        cur_image = f'{dir_name_images}/{cur_image_raw}'
-        cur_text = f'{dir_name_textes}/{cur_text}'
+        cur_image = Path(dir_name_images)/cur_image_raw
+        cur_text = Path(dir_name_textes)/cur_text
 
         shutil.move(cur_image, valid_path_images)
         shutil.move(cur_text, valid_path_labels)
@@ -80,7 +81,7 @@ def create_empty_dataset(dataset_name):
 
 
 def create_yaml(data_folder_path: str, class_ides: list[int], class_names):
-    yaml_path = f'{data_folder_path}/data.yaml'
+    yaml_path = Path(data_folder_path)/'data.yaml'
     with open(yaml_path, 'w') as yaml:
         yaml.write('train: ../train/images\n')
         yaml.write('val: ../val/images\n')
