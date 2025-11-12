@@ -86,7 +86,6 @@ photos/
 photos_texts/
 dataset
 handmade
-
-
 sam_vit_l_0b3195.pth
+*.user
 
